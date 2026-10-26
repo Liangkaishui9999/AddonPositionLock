@@ -1,8 +1,6 @@
 # AddonPositionLock
 
-OmniToolbox 本地模块：把 FF14 的游戏原生窗口（addon）钉在固定位置，避免被其他插件窗口挤动或遮挡。
-
-不是独立 Dalamud 插件，是 **OmniToolbox 的本地模块**，由宿主在运行时用 Roslyn 编译 `.cs` 源码后加载。
+OmniToolbox 在线模块：把 FF14 的游戏原生窗口（addon）钉在固定位置，避免被其他插件窗口挤动或遮挡。
 
 ## 功能
 
@@ -11,24 +9,30 @@ OmniToolbox 本地模块：把 FF14 的游戏原生窗口（addon）钉在固定
 - **跟随分辨率**：以 1920 宽为基准存坐标，换 2K / 4K 屏自动等比缩放
 - **排除规则**：HUD 节点（`_` 前缀）、动态弹窗（Tooltip / ContextMenu / ItemDetail 等）默认不接管
 
-## 安装
+## 在线安装（推荐）
 
-1. 确保装的是 OmniToolbox 1.1.8.1（模块基类 API 对应这个版本）
-2. 把 `AddonPositionLock.cs` 放到任意固定目录
+OmniToolbox → 插件设置 → **在线模块**，把下面任一个地址填进去：
+
+```
+https://raw.githubusercontent.com/Liangkaishui9999/AddonPositionLock/main/TreeHouseModules.json
+```
+
+或者直接填仓库地址（宿主会自动找根目录的 `TreeHouseModules.json`）：
+
+```
+https://github.com/Liangkaishui9999/AddonPositionLock
+```
+
+首次安装后默认关闭，在「树树妙妙屋 → 在线」里手动启用「窗口位置锁定」。
+
+最低宿主版本：**1.1.8.1**
+
+## 手动安装（本地模块）
+
+1. 下载 [`Modules/AddonPositionLock.cs`](Modules/AddonPositionLock.cs)
+2. 放到任意固定目录
 3. OmniToolbox 设置 → 本地模块 → 添加，选中这个 `.cs` 文件
-4. 重载 OmniToolbox，在模块列表里启用「窗口位置锁定」
-
-宿主会直接编译源码，它的注册表在：
-
-```
-%APPDATA%\XIVLauncherCN\pluginConfigs\OmniToolbox\TreeHouseLocal\LocalTreeModules.json
-```
-
-```json
-["C:\\你的路径\\AddonPositionLock.cs"]
-```
-
-配置存在 `pluginConfigs\OmniToolbox\AddonPositionLock.json`。
+4. 重载 OmniToolbox，在模块列表里启用
 
 ## 用法
 
@@ -93,7 +97,24 @@ args.AddMenuItem(new MenuItem { Name = "锁定窗口", OnClicked = _ => ... });
 | .NET | 10 |
 | 模块接口 | `ModuleBase`（`OnEnable` / `OnDisable` / `DrawSettings`） |
 
-注意：GitHub 上 `OmniToolbox.Common` 主线仓库的模块 API 已经改成 `OmniModuleBase` + `OnStart(FeatureLifetime)`，和 1.1.8.1 装出来的 `ModuleBase` + `OnEnable` **不兼容**。本模块是照着 1.1.8.1 的实际 DLL 写的。
+注意：`OmniToolbox.Common` 仓库主线已经改成 `OmniModuleBase` + `OnStart(FeatureLifetime)` 的新接口，和 1.1.8.1 实际安装出来的 `ModuleBase` + `OnEnable` **不兼容**。本模块是照着 1.1.8.1 的实际 DLL 写的。
+
+## 仓库结构
+
+```
+AddonPositionLock/
+├── TreeHouseModules.json          在线模块清单（宿主入口）
+├── Modules/
+│   └── AddonPositionLock.cs       模块源码（30,995 B）
+├── README.md
+└── LICENSE
+```
+
+修改 `Modules/AddonPositionLock.cs` 之后，必须同步更新 `TreeHouseModules.json` 里的 `Sha256`（大写、无连字符），否则宿主会拒绝加载：
+
+```powershell
+(Get-FileHash Modules\AddonPositionLock.cs -Algorithm SHA256).Hash
+```
 
 ## 已知限制
 
