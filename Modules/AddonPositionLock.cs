@@ -15,23 +15,32 @@ using OmenTools;
 using OmniToolbox.Common.Module.Abstractions;
 using OmniToolbox.Common.Module.Enums;
 using OmniToolbox.Common.Module.Models;
+using OmniToolbox.UI;
+using TreeTools.Lifecycle;
 
 namespace OmniToolbox.TreeLocal;
 
 /// <summary>
-/// 窗口位置锁定（本地模块）。
-/// 不维护规则列表：遍历游戏内全部原生窗口，第一次出现时记下游戏给出的位置并钉住，
-/// 之后该窗口每次打开都回到这个位置。鼠标贴近窗口右边缘才出现锁按钮。
-/// 目标宿主：OmniToolbox 1.1.8.1（ModuleBase / OnEnable / OnDisable）。
+/// 窗口位置锁定（在线模块）。
+/// 遍历游戏内全部原生窗口，第一次出现时记下游戏给出的位置并钉住，
+/// 之后该窗口每次打开都回到这个位置；在窗口上点右键可锁定 / 解除锁定。
+/// 目标宿主：OmniToolbox 1.1.8.9（OmniModuleBase / OnStart / OnStop）。
 /// </summary>
-public sealed unsafe class AddonPositionLock : ModuleBase
+[ModuleApiVersion(1)]
+public sealed unsafe class AddonPositionLock : OmniModuleBase
 {
     public override ModuleInfo Info { get; } = new()
     {
-        Title = "窗口位置锁定",
-        Description = "自动接管游戏内所有原生窗口：首次出现时记住位置并锁定，之后不再被拖动或被其他插件挤动。窗口右边缘悬停出现锁。",
-        Category = ModuleCategory.Interface
+        Category = ModuleCategory.Interface,
+        Author = "Liangkaishui9999"
     };
+
+    public override ModuleLocalization Localization { get; } = ModuleLocalization.Create(
+        new Dictionary<string, string>
+        {
+            ["Title"] = "窗口位置锁定",
+            ["Description"] = "自动接管游戏内所有原生窗口：首次出现时记住位置并锁定，之后不再被拖动或被其他插件挤动。在窗口上点右键可锁定或解除锁定。"
+        });
 
     public override bool HasSettings => true;
 
@@ -57,9 +66,8 @@ public sealed unsafe class AddonPositionLock : ModuleBase
     private string diagnostics = string.Empty;
     private int pinCount;
     private string pinDetail = string.Empty;
-    private bool subscribed;
 
-    protected override void OnEnable()
+    protected override void OnStart(FeatureLifetime activation)
     {
         var service = DService.Instance();
         configPath = Path.Combine(service.PI.GetPluginConfigDirectory(), "AddonPositionLock.json");
@@ -71,22 +79,21 @@ public sealed unsafe class AddonPositionLock : ModuleBase
         service.AddonLifecycle.RegisterListener(AddonEvent.PostUpdate, OnAddonPostUpdate);
         service.AddonLifecycle.RegisterListener(AddonEvent.PostRefresh, OnAddonPostUpdate);
         service.ContextMenu.OnMenuOpened += OnContextMenuOpened;
-        subscribed = true;
+
+        // 本次启用的资源全部登记到 activation，停用时由宿主统一回收
+        activation.OnStopping(() =>
+        {
+            var s = DService.Instance();
+            s.Framework.Update -= OnFrameworkUpdate;
+            s.UIBuilder.Draw -= OnDraw;
+            s.AddonLifecycle.UnregisterListener(AddonEvent.PostUpdate, OnAddonPostUpdate);
+            s.AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, OnAddonPostUpdate);
+            s.ContextMenu.OnMenuOpened -= OnContextMenuOpened;
+        });
     }
 
-    protected override void OnDisable()
+    protected override void OnStop()
     {
-        var service = DService.Instance();
-        if (subscribed)
-        {
-            service.Framework.Update -= OnFrameworkUpdate;
-            service.UIBuilder.Draw -= OnDraw;
-            service.AddonLifecycle.UnregisterListener(AddonEvent.PostUpdate, OnAddonPostUpdate);
-            service.AddonLifecycle.UnregisterListener(AddonEvent.PostRefresh, OnAddonPostUpdate);
-            service.ContextMenu.OnMenuOpened -= OnContextMenuOpened;
-            subscribed = false;
-        }
-
         if (dirty)
         {
             Save();

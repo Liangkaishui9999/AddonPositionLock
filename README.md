@@ -25,7 +25,7 @@ https://github.com/Liangkaishui9999/AddonPositionLock
 
 首次安装后默认关闭，在「树树妙妙屋 → 在线」里手动启用「窗口位置锁定」。
 
-最低宿主版本：**1.1.8.1**
+最低宿主版本：**1.1.8.9**
 
 ## 手动安装（本地模块）
 
@@ -46,9 +46,9 @@ https://github.com/Liangkaishui9999/AddonPositionLock
 ## 实现要点
 
 ```
-ModuleBase（OmniToolbox.Common 1.1.8.1）
-├── OnEnable     挂 Framework.Update + UiBuilder.Draw + AddonLifecycle + ContextMenu
-├── OnDisable    全部反挂并落盘
+OmniModuleBase（OmniToolbox.Common 1.1.8.9）
+├── OnStart      挂 Framework.Update + UiBuilder.Draw + AddonLifecycle + ContextMenu
+├── OnStop       落盘（事件由 activation.OnStopping 统一回收）
 └── DrawSettings  启用锁定 / 跟随分辨率 / 全部解除 / 排除规则
 ```
 
@@ -92,12 +92,12 @@ args.AddMenuItem(new MenuItem { Name = "锁定窗口", OnClicked = _ => ... });
 
 | 项 | 版本 |
 | --- | --- |
-| OmniToolbox | 1.1.8.1 |
+| OmniToolbox | 1.1.8.9 |
 | Dalamud API | 15 |
 | .NET | 10 |
 | 模块接口 | `ModuleBase`（`OnEnable` / `OnDisable` / `DrawSettings`） |
 
-注意：`OmniToolbox.Common` 仓库主线已经改成 `OmniModuleBase` + `OnStart(FeatureLifetime)` 的新接口，和 1.1.8.1 实际安装出来的 `ModuleBase` + `OnEnable` **不兼容**。本模块是照着 1.1.8.1 的实际 DLL 写的。
+注意：从 1.1.8.2 起模块接口换成了 `OmniModuleBase` + `OnStart(FeatureLifetime)`，旧的 `ModuleBase` + `OnEnable` 已被移除。本模块按 1.1.8.9 的实际 DLL 编译验证。
 
 ## 仓库结构
 
