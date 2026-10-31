@@ -4,7 +4,7 @@
     {
       "InternalName": "AddonPositionLock",
       "Author": "Liangkaishui9999",
-      "RepositoryURL": "https://raw.githubusercontent.com/Liangkaishui9999/AddonPositionLock/main/TreeHouseModules.json",
+      "RepositoryURL": "https://github.com/Liangkaishui9999/AddonPositionLock",
       "Localization": {
         "Source": {
           "Title": "窗口位置锁定",
@@ -12,7 +12,7 @@
         }
       },
       "ApiVersion": 1,
-      "Version": "1.1.0",
+      "Version": "1.1.1",
       "MinimumOmniVersion": "1.1.8.9",
       "File": "Modules/AddonPositionLock.cs",
       "Sha256": "D5B3B00F7CDB41972CE5FDF3E3D9238BBD8747E5A5B0157554247D6DB4CD8920"
