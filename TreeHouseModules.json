@@ -11,11 +11,11 @@
           "Description": "自动接管游戏内所有原生窗口：首次出现时记住位置并锁定，之后不再被拖动或被其他插件挤动。在窗口上点右键可锁定或解除锁定。"
         }
       },
-      "APIVersion": 1,
+      "ApiVersion": 1,
       "Version": "1.1.0",
       "MinimumOmniVersion": "1.1.8.9",
       "File": "Modules/AddonPositionLock.cs",
-      "SHA256": "D5B3B00F7CDB41972CE5FDF3E3D9238BBD8747E5A5B0157554247D6DB4CD8920"
+      "Sha256": "D5B3B00F7CDB41972CE5FDF3E3D9238BBD8747E5A5B0157554247D6DB4CD8920"
     }
   ]
 }
