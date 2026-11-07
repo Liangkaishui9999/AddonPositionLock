@@ -92,12 +92,12 @@ args.AddMenuItem(new MenuItem { Name = "锁定窗口", OnClicked = _ => ... });
 
 | 项 | 版本 |
 | --- | --- |
-| OmniToolbox | 1.1.8.9 |
+| OmniToolbox | 1.1.8.9 ~ 1.1.9.5 |
 | Dalamud API | 15 |
 | .NET | 10 |
-| 模块接口 | `ModuleBase`（`OnEnable` / `OnDisable` / `DrawSettings`） |
+| 模块接口 | `OmniModuleBase`（`OnStart(FeatureLifetime)` / `OnStop` / `DrawSettings`） |
 
-注意：从 1.1.8.2 起模块接口换成了 `OmniModuleBase` + `OnStart(FeatureLifetime)`，旧的 `ModuleBase` + `OnEnable` 已被移除。本模块按 1.1.8.9 的实际 DLL 编译验证。
+注意：从 1.1.8.2 起模块接口换成了 `OmniModuleBase` + `OnStart(FeatureLifetime)`，旧的 `ModuleBase` + `OnEnable` 已被移除。本模块在 **1.1.8.9** 和 **1.1.9.5** 两个版本的实际 DLL 下均编译验证通过（0 warning / 0 error），两个版本之间 `OmniModuleBase` 的公开签名一致，源码无需改动。
 
 ## 仓库结构
 
